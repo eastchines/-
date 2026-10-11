@@ -1,0 +1,31 @@
+# GitHub Actions 云端编译配置
+name: Build Windows exe
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 安装依赖
+        run: pip install pynput pywin32 pyinstaller
+
+      - name: 打包 exe
+        run: pyinstaller -w -F --clean --add-data "beast_body.png;." --add-data "beast_hand_empty.png;." --add-data "beast_hand_press.png;." --add-data "girl_body.png;." --add-data "girl_hand_empty.png;." --add-data "girl_hand_press.png;." main.py -n "DesktopPet"
+
+      - name: 上传成品
+        uses: actions/upload-artifact@v4
+        with:
+          name: DesktopPet-exe
+          path: dist/DesktopPet.exe
