@@ -1,19 +1,30 @@
+name: Build EXE
+on:
+  push:
+    branches: [ main ]
+
 jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      # ==========新增这一段 安装依赖 ==========
       - name: Install python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pillow pyinstaller
-      # ======================================
 
       - name: Build exe with PyInstaller
         run: pyinstaller main.py -F -w --hidden-import=PIL
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: 桌面宠物可执行文件
+          path: dist/*.exe
